@@ -11,7 +11,7 @@ class k_BanditGame(gym.Env):
         self.observation_space = spaces.Discrete(1)  # always ready to play
         self.action_space = spaces.Discrete(self.k_hands)
         self.mean_rewards = (np.random.normal(size=self.k_hands))
-        self.max_mean_reward = self.mean_rewards
+        self.max_mean_reward = np.max(self.mean_rewards)
         self.winning_arm = int(np.argmax(self.mean_rewards))
         self.max_mean_reward = float(np.max(self.mean_rewards))
 
