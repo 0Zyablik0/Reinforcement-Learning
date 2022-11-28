@@ -88,7 +88,10 @@ def policy_iteration(
 
     while True:
         old_values = state_values
-        policy = get_greedy_policy(transition_probabilities=transition_probabilities, rewards=rewards, gamma=gamma)
+        policy = get_greedy_policy(
+            transition_probabilities=transition_probabilities,
+            rewards=rewards,
+            gamma=gamma)
 
         state_values = policy_evaluation(
             policy=policy,
@@ -96,5 +99,44 @@ def policy_iteration(
             rewards=rewards,
             gamma=gamma,
             eps=eps)
+
         if (np.linalg.norm(state_values - old_values) < eps):
             return state_values
+
+
+def value_iteration(
+        transition_probabilities: npt.NDArray[np.float64],
+        rewards: npt.NDArray[np.float64],
+        gamma: float = 0.9,
+        eps: float = 1e-4
+) -> npt.NDArray[np.float64]:
+    '''
+    Calculate state-value function for the given policy
+
+    Arguments:
+        policy - policy of the agent, array of size (n_states, n_actions)
+        transition_probabilities - dynamics of the environment, array of the size (n_states, n_actions, n_states, n_rewards )
+        rewards - rewards for transition, array of the size (n_states, n_actions, n_states, n_rewards )
+        gamma - discounting factor, float
+        eps - accuracy of approximation
+
+    Returns:
+        state-value function
+
+    '''
+    n_states, _, _, _ = transition_probabilities.shape
+    state_values = np.zeros((n_states, 1))
+
+    while True:
+        delta = 0
+        for i in range(n_states):
+            old = state_values[i][0]
+            q_value = np.sum(
+                transition_probabilities[i]*(rewards[i] + gamma * state_values), axis=(1, 2)
+            )
+            state_values[i] = np.max(q_value, axis=0)
+            delta += (state_values[i][0] - old)**2
+        if delta < eps:
+            break
+    return state_values
+    
