@@ -89,6 +89,7 @@ def policy_iteration(
     while True:
         old_values = state_values
         policy = get_greedy_policy(
+            state_values=state_values,
             transition_probabilities=transition_probabilities,
             rewards=rewards,
             gamma=gamma)
